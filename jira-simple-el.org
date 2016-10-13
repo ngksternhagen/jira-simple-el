@@ -1,0 +1,20 @@
+* jira-rest.el
+
+** An Emacs Lisp library for interfacing with JIRA's REST API, focusing on simplicity
+
+** To Install & Run
+    1. Place ``jira-simple.el`` somewhere on your load-path
+    2. Add ``(require 'jira-simple)`` to your init.
+
+* TODO
+
+** Add automated tests with ERT
+** Implement issue search
+** Adding/removing/editing comments
+** Modifying issues (as supported by the API)
+** eventually wrap every feature exposed by the Jira REST api.
+
+* Contributing
+
+  Contributions are encouraged. GitLab merge requests, GitHub pull requests, and
+  patches submitted in other forms are all accepted.
