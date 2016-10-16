@@ -51,6 +51,8 @@ see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+
   :type 'string
   :initialize 'custom-initialize-set)
 
+;; TODO should we continue to hard-code faces in this way
+;; since we don't know anything about the user's themes?
 (defface jira-simple-issue-info-face
   '((t (:foreground "black" :background "yellow4")))
   "Base face for issue information."
