@@ -16,18 +16,19 @@
 (require 'url)
 
 ;; ********************************
+;; JIRA Simple -- based on...
 ;; JIRA REST Mode - By Matt DeBoard
 ;; ********************************
 
-(defgroup jira-rest nil
+(defgroup jira-simple nil
   "JIRA customization group."
   :group 'applications)
 
-(defgroup jira-rest-faces nil
+(defgroup jira-simple-faces nil
   "Faces for displaying JIRA information."
   :group 'jira)
 
-(defvar jira-rest-auth-info nil
+(defvar jira-simple-auth-info nil
   "The auth header used to authenticate each request. Please
 see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Basic+AuthenticationConsists for more information.")
 
@@ -36,136 +37,136 @@ see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+
   (setq jira-username (read-string "enter Jira username > "))
   (setq jira-passwd (read-passwd "enter Jira passwd > ")))
 
-(defun jira-rest-login ()
+(defun jira-simple-login ()
   (if (load-auth-info)
       (let ((enc (base64-encode-string
                   (concat jira-username ":" jira-passwd))))
-        (setq jira-rest-auth-info (concat "Basic " enc)))
+        (setq jira-simple-auth-info (concat "Basic " enc)))
     (message "You must provide your login information.")))
 
-(defcustom jira-rest-endpoint ""
+(defcustom jira-simple-endpoint ""
   "The URL of the REST API endpoint for user's JIRA
  installation."
-  :group 'jira-rest
+  :group 'jira-simple
   :type 'string
   :initialize 'custom-initialize-set)
 
-(defface jira-rest-issue-info-face
+(defface jira-simple-issue-info-face
   '((t (:foreground "black" :background "yellow4")))
   "Base face for issue information."
-  :group 'jira-rest-faces)
+  :group 'jira-simple-faces)
 
-(defface jira-rest-issue-info-header-face
-  '((t (:bold t :inherit 'jira-rest-issue-info-face)))
+(defface jira-simple-issue-info-header-face
+  '((t (:bold t :inherit 'jira-simple-issue-info-face)))
   "Base face for issue headers."
-  :group 'jira-rest-faces)
+  :group 'jira-simple-faces)
 
-(defface jira-rest-issue-summary-face
+(defface jira-simple-issue-summary-face
   '((t (:bold t)))
   "Base face for issue summary."
-  :group 'jira-rest-faces)
+  :group 'jira-simple-faces)
 
-(defface jira-rest-comment-face
+(defface jira-simple-comment-face
   '((t (:background "gray23")))
   "Base face for comments."
-  :group 'jira-rest-faces)
+  :group 'jira-simple-faces)
 
-(defface jira-rest-comment-header-face
+(defface jira-simple-comment-header-face
   '((t (:bold t)))
   "Base face for comment headers."
-  :group 'jira-rest-faces)
+  :group 'jira-simple-faces)
 
-(defface jira-rest-link-issue-face
+(defface jira-simple-link-issue-face
   '((t (:underline t)))
   "Face for linked issues."
-  :group 'jira-rest-faces)
+  :group 'jira-simple-faces)
 
-(defface jira-rest-link-project-face
+(defface jira-simple-link-project-face
   '((t (:underline t)))
   "Face for linked projects"
-  :group 'jira-rest-faces)
+  :group 'jira-simple-faces)
 
-(defface jira-rest-link-filter-face
+(defface jira-simple-link-filter-face
   '((t (:underline t)))
   "Face for linked filters"
-  :group 'jira-rest-faces)
+  :group 'jira-simple-faces)
 
-(defvar jira-rest-mode-hook nil)
+(defvar jira-simple-mode-hook nil)
 
-(defvar jira-rest-mode-map nil)
+(defvar jira-simple-mode-map nil)
 
-(if jira-rest-mode-map
+(if jira-simple-mode-map
     nil
   (progn
-    (setq jira-rest-mode-map (make-sparse-keymap))
-    (define-key jira-rest-mode-map "c" 'jira-rest-create-issue)
-    (define-key jira-rest-mode-map "di" 'jira-rest-delete-issue)
-    (define-key jira-rest-mode-map "a" 'jira-rest-change-assignee)
-    (define-key jira-rest-mode-map "gg" 'jira-rest-get-watchers)
-    (define-key jira-rest-mode-map "ga" 'jira-rest-add-watcher)
-    (define-key jira-rest-mode-map "gr" 'jira-rest-remove-watcher)
-    (define-key jira-rest-mode-map "\S-q" 'jira-rest-mode-quit)))
+    (setq jira-simple-mode-map (make-sparse-keymap))
+    (define-key jira-simple-mode-map "c" 'jira-simple-create-issue)
+    (define-key jira-simple-mode-map "di" 'jira-simple-delete-issue)
+    (define-key jira-simple-mode-map "a" 'jira-simple-change-assignee)
+    (define-key jira-simple-mode-map "gg" 'jira-simple-get-watchers)
+    (define-key jira-simple-mode-map "ga" 'jira-simple-add-watcher)
+    (define-key jira-simple-mode-map "gr" 'jira-simple-remove-watcher)
+    (define-key jira-simple-mode-map "\S-q" 'jira-simple-mode-quit)))
 
-(defun jira-rest-mode ()
+(defun jira-simple-mode ()
   "A mode for working with JIRA's JSON REST API. The full
 specification for the API can be found at URL
 https://developer.atlassian.com/display/JIRADEV/JIRA+REST+APIs
 
 Requires JIRA 5.0 or greater.
 
-\\{jira-rest-mode-map}"
+\\{jira-simple-mode-map}"
   (interactive)
-  (jira-rest-login)
-  (if (or (equal jira-rest-endpoint nil)
-          (equal jira-rest-endpoint ""))
-      (message "jira-rest-endpoint not set! Please set this
+  (jira-simple-login)
+  (if (or (equal jira-simple-endpoint nil)
+          (equal jira-simple-endpoint ""))
+      (message "jira-simple-endpoint not set! Please set this
 value in .jira-auth-info.el.")
     (progn
-      (switch-to-buffer "*JIRA-REST*")
+      (switch-to-buffer "*JIRA-SIMPLE*")
       (kill-all-local-variables)
-      (setq major-mode 'jira-rest-mode)
-      (setq mode-name "JIRA-REST")
-      (use-local-map jira-rest-mode-map)
-      (run-hooks 'jira-rest-mode-hook)
-      ;; (jira-rest-store-projects)
-      ;; (jira-rest-store-priorities)
-      ;; (jira-rest-store-statuses)
-      ;; (jira-rest-store-types)
-      (insert "Welcome to jira-rest-mode!")
+      (setq major-mode 'jira-simple-mode)
+      (setq mode-name "JIRA-SIMPLE")
+      (use-local-map jira-simple-mode-map)
+      (run-hooks 'jira-simple-mode-hook)
+      ;; (jira-simple-store-projects)
+      ;; (jira-simple-store-priorities)
+      ;; (jira-simple-store-statuses)
+      ;; (jira-simple-store-types)
+      (insert "Welcome to jira-simple-mode!")
       (message "jira rest mode loaded!"))))
 
-(defvar jira-rest-current-issue nil
+(defvar jira-simple-current-issue nil
   "This holds the currently selected issue.")
 
-(defvar jira-rest-projects-list nil
+(defvar jira-simple-projects-list nil
   "This holds a list of projects and their details.")
 
-(defvar jira-rest-types nil
+(defvar jira-simple-types nil
   "This holds a list of issues types.")
 
-(defvar jira-rest-statuses nil
+(defvar jira-simple-statuses nil
   "This holds a list of statuses.")
 
-(defvar jira-rest-priorities nil
+(defvar jira-simple-priorities nil
   "This holds a list of priorities.")
 
-(defvar jira-rest-user-fullnames nil
+(defvar jira-simple-user-fullnames nil
   "This holds a list of user fullnames.")
 
 (defvar response nil)
 
-(defun jira-rest-api-interact (method data &optional path)
+(defun jira-simple-api-interact (method data &optional path)
   "Interact with the API using method 'method' and data 'data'.
 Optional arg 'path' may be provided to specify another location further
 down the URL structure to send the request."
-  (if (not jira-rest-auth-info)
-      (message "You must login first, 'M-x jira-rest-login'.")
+  (if (not jira-simple-auth-info)
+      (message "You must login first, 'M-x jira-simple-login'.")
     (let ((url-request-method method)
           (url-request-extra-headers
            `(("Content-Type" . "application/json")
-             ("Authorization" . ,jira-rest-auth-info)))
+             ("Authorization" . ,jira-simple-auth-info)))
           (url-request-data data)
-          (target (concat jira-rest-endpoint path)))
+          (target (concat jira-simple-endpoint path)))
       (with-current-buffer (current-buffer)
         (url-retrieve target 'my-switch-to-url-buffer `(,method))))))
 
@@ -180,9 +181,9 @@ down the URL structure to send the request."
           (setq response (json-read-from-string data))))
     (kill-buffer (current-buffer))))
 
-(defun jira-rest-mode-quit ()
+(defun jira-simple-mode-quit ()
   (interactive)
-  (kill-buffer "*JIRA-REST*"))
+  (kill-buffer "*JIRA-SIMPLE*"))
 
 (defun id-or (s)
   "Return ':id' if 's' is a numeric string. Otherwise, return
@@ -193,7 +194,7 @@ enables us to allow either type of user input."
   (if (not (equal 0 (string-to-number s)))
       "id"))
 
-(defun jira-rest-create-issue (project summary description issuetype)
+(defun jira-simple-create-issue (project summary description issuetype)
   "File a new issue with JIRA."
   (interactive (list (read-string "Project Key: ")
                      (read-string "Summary: ")
@@ -221,41 +222,41 @@ enables us to allow either type of user input."
         (puthash "description" description issue-hash)
         (puthash "fields" issue-hash field-hash)
         ;; Return the JSON-encoded hash map.
-        (jira-rest-api-interact "POST" (json-encode field-hash))
+        (jira-simple-api-interact "POST" (json-encode field-hash))
         response))))
 
-(defun jira-rest-delete-issue (k)
+(defun jira-simple-delete-issue (k)
   "Delete an issue with unique identifier 'k'. 'k' is either an
 issueId or key."
   (interactive (list (read-string "Issue Key or ID: ")))
-  (jira-rest-api-interact "DELETE" nil k))
+  (jira-simple-api-interact "DELETE" nil k))
 
-(defun jira-rest-get-watchers (k)
+(defun jira-simple-get-watchers (k)
   "Get all the watchers for an issue."
   (interactive (list (read-string "Issue Key or ID: ")))
-  (jira-rest-api-interact "GET" nil (concat k "/watchers")))
+  (jira-simple-api-interact "GET" nil (concat k "/watchers")))
 
-(defun jira-rest-add-watcher (k name)
+(defun jira-simple-add-watcher (k name)
   "Add a watcher to an issue."
   (interactive (list (read-string "Issue Key or ID: ")
                      (read-string "Username to Add as Watcher: ")))
-  (jira-rest-api-interact "POST" (json-encode name) (concat k "/watchers")))
+  (jira-simple-api-interact "POST" (json-encode name) (concat k "/watchers")))
 
-(defun jira-rest-remove-watcher (k name)
+(defun jira-simple-remove-watcher (k name)
   "Remove a watcher from an issue."
   (interactive (list (read-string "Issue Key or ID: ")
                      (read-string "Username to Remove as Watcher: ")))
-  (jira-rest-api-interact "DELETE" nil (concat k "/watchers?" name)))
+  (jira-simple-api-interact "DELETE" nil (concat k "/watchers?" name)))
 
-(defun jira-rest-change-assignee (k &optional name)
+(defun jira-simple-change-assignee (k &optional name)
   "Change the assignee for an issue."
   (interactive (list (read-string "Issue Key or ID: ")
                      (read-string "New Assignee: ")))
   (let ((name-hash (make-hash-table :test 'equal)))
     (progn
       (puthash "name" name name-hash)
-      (jira-rest-api-interact "PUT" (json-encode name-hash)
+      (jira-simple-api-interact "PUT" (json-encode name-hash)
                               (concat k "/assignee")))))
 
-(provide 'jira-rest)
-;;; jira-rest.el ends here
+(provide 'jira-simple)
+;;; jira-simple.el ends here
